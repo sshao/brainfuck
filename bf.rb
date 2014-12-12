@@ -16,6 +16,31 @@ class Brainfuck
     interpret
   end
 
+  def interpret
+    ip = 0
+
+    while ip != @stream.length
+      raise "instruction pointer=#{ip} is out of bounds" unless @ip_bounds.include? ip
+      raise "memory pointer=#{@ptr} is out of bounds" unless PTR_BOUNDS.include? @ptr
+      cmd = @stream[ip]
+
+      case cmd
+      when ">" then @ptr += 1
+      when "<" then @ptr -= 1
+      when "+" then @stack[@ptr] += 1
+      when "-" then @stack[@ptr] -= 1
+      when "." then print "#{@stack[@ptr].chr}"
+      when "," then @stack[@ptr] = get_character
+      when "[" then ip = index_of_matching_brace(ip, :+) if (@stack[@ptr] == 0)
+      when "]" then ip = index_of_matching_brace(ip, :-) if !(@stack[@ptr] == 0)
+      else raise "command #{cmd} not in #{COMMANDS.inspect}"
+      end
+
+      ip += 1
+    end
+  end
+
+  private
   def index_of_matching_brace(start, dir = :-)
     ip = start
     br_stack = []
@@ -46,30 +71,6 @@ class Brainfuck
     ip
   end
 
-  def interpret
-    ip = 0
-
-    while ip != @stream.length
-      raise "instruction pointer=#{ip} is out of bounds" unless @ip_bounds.include? ip
-      raise "memory pointer=#{@ptr} is out of bounds" unless PTR_BOUNDS.include? @ptr
-      cmd = @stream[ip]
-
-      case cmd
-      when ">" then @ptr += 1
-      when "<" then @ptr -= 1
-      when "+" then @stack[@ptr] += 1
-      when "-" then @stack[@ptr] -= 1
-      when "." then print "#{@stack[@ptr].chr}"
-      when "," then @stack[@ptr] = get_character
-      when "[" then ip = index_of_matching_brace(ip, :+) if (@stack[@ptr] == 0)
-      when "]" then ip = index_of_matching_brace(ip, :-) if !(@stack[@ptr] == 0)
-      else
-        raise "command #{cmd} not in #{COMMANDS.inspect}"
-      end
-
-      ip += 1
-    end
-  end
 end
 
 Brainfuck.new(File.read("../progs/hello_world.b").strip)
