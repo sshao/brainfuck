@@ -4,61 +4,55 @@ class Brainfuck
   include HighLine::SystemExtensions
 
   COMMANDS = %w(> < + - . , [ ])
-  BOUNDS = (0..30000)
+  MEM = 30000
+  PTR_BOUNDS = (0..MEM)
 
   def initialize(input)
-    @stack = Array.new(30000, 0)
-    @br_stack = []
+    @stack = Array.new(MEM, 0)
     @ptr = 0
     @stream = input
+    @ip_bounds = (0..@stream.size)
+
     interpret
   end
 
-  def interpret
-    lookf4match = false
-    lookb4match = false
-    i = 0
+  def index_of_matching_brace(start, dir = :-)
+    ip = start
+    br_stack = []
 
-    while i != @stream.length
-      raise "index=#{i} is out of bounds" unless (0..@stream.length).include? i
-      raise "@ptr=#{@ptr} is out of bounds" unless BOUNDS.include? @ptr
-      cmd = @stream[i]
+    while @ip_bounds.include? ip
+      cmd = @stream[ip]
 
-      if lookf4match
-        unless cmd == "[" or cmd == "]"
-          i += 1
-          next
-        end
-
-        @br_stack.push(cmd) if cmd == "["
-        @br_stack.pop if cmd == "]"
-
-        if @br_stack.size == 0
-          lookf4match = false
-          i += 1
-          next
-        else
-          i += 1
-          next
-        end
-      elsif lookb4match
-        unless cmd == "[" or cmd == "]"
-          i -= 1
-          next
-        end
-
-        @br_stack.push(cmd) if cmd == "]"
-        @br_stack.pop if cmd == "["
-
-        if @br_stack.size == 0
-          lookb4match = false
-          i += 1
-          next
-        else
-          i -= 1
-          next
-        end
+      unless cmd == "[" or cmd == "]"
+        ip = ip.send(dir, 1)
+        next
       end
+
+      if dir == :-
+        br_stack.push(cmd) if cmd == "]"
+        br_stack.pop if cmd == "["
+      else
+        br_stack.push(cmd) if cmd == "["
+        br_stack.pop if cmd == "]"
+      end
+
+      if br_stack.size == 0
+        break
+      else
+        ip = ip.send(dir, 1)
+      end
+    end
+
+    ip
+  end
+
+  def interpret
+    ip = 0
+
+    while ip != @stream.length
+      raise "instruction pointer=#{ip} is out of bounds" unless @ip_bounds.include? ip
+      raise "memory pointer=#{@ptr} is out of bounds" unless PTR_BOUNDS.include? @ptr
+      cmd = @stream[ip]
 
       case cmd
       when ">" then @ptr += 1
@@ -67,22 +61,13 @@ class Brainfuck
       when "-" then @stack[@ptr] -= 1
       when "." then print "#{@stack[@ptr].chr}"
       when "," then @stack[@ptr] = get_character
-      when "[" then
-        if @stack[@ptr] == 0
-          lookf4match = true
-          @br_stack.push(cmd)
-        end
-      when "]" then
-        unless @stack[@ptr] == 0
-          lookb4match = true
-          i -= 1
-          @br_stack.push(cmd)
-        end
+      when "[" then ip = index_of_matching_brace(ip, :+) if (@stack[@ptr] == 0)
+      when "]" then ip = index_of_matching_brace(ip, :-) if !(@stack[@ptr] == 0)
       else
-        raise
+        raise "command #{cmd} not in #{COMMANDS.inspect}"
       end
 
-      i += 1 unless lookb4match
+      ip += 1
     end
   end
 end
