@@ -61,17 +61,15 @@ class Brainfuck
         br_stack.pop if cmd == "]"
       end
 
-      if br_stack.size == 0
-        break
-      else
-        ip = ip.send(dir, 1)
-      end
+      break if br_stack.size == 0
+
+      ip = ip.send(dir, 1)
     end
 
     ip
   end
-
 end
 
-Brainfuck.new(File.read("../progs/hello_world.b").strip)
-Brainfuck.new(File.read("../progs/392quine.b").strip)
+#Brainfuck.new(File.read("../progs/hello_world.b").strip)
+#Brainfuck.new(File.read("../progs/392quine.b").strip)
+Brainfuck.new(File.read("../progs/out.bf").strip)
