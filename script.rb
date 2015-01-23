@@ -34,4 +34,4 @@ class Brainfuck
   end
 end
 
-Brainfuck.run("../progs/print_nums.b", ARGV.first)
+Brainfuck.run(ARGV.first, ARGV.last)

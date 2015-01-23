@@ -67,7 +67,7 @@ class Brainfuck
       def bytecode(g)
         g.push_local(1)
         g.meta_push_1
-        g.meta_send_op_minus
+        g.meta_send_op_minus(0)
         g.set_local(1)
         g.pop
       end
@@ -98,7 +98,7 @@ class Brainfuck
         g.send(:[], 1, false)
 
         g.meta_push_1
-        g.meta_send_op_minus
+        g.meta_send_op_minus(0)
 
         g.send(:[]=, 2, false)
         g.pop
@@ -123,6 +123,25 @@ class Brainfuck
 
         g.send(:[]=, 2, false)
         g.pop
+      end
+    end
+
+    class Iteration
+      def initialize(body)
+        @body = body
+      end
+
+      def bytecode(g)
+        start = g.new_label
+        start.set!
+
+        @body.bytecode(g)
+        g.push_local 0
+        g.push_local 1
+        g.send(:[], 1, false)
+        g.meta_push_0
+        g.meta_send_op_equal(0)
+        g.gif start
       end
     end
 

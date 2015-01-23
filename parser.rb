@@ -7,11 +7,11 @@ class Brainfuck
     end
 
     def parse
-      # FIXME oh god
-      if @ast.is_a? Array
-        @ast.map { |hash| generate_node(hash.keys.first) }
-      else
-        @ast.map { |cmd, val| generate_node(cmd, val) }
+      # FIXME still not good
+      @ast.map do |s|
+        symbol = s.is_a?(Hash) ? s.keys.first : s
+        subtree = s.is_a?(Hash) ? s[symbol] : []
+        generate_node(symbol, subtree)
       end
     end
 
@@ -27,9 +27,10 @@ class Brainfuck
       when :gets then AST::Gets.new
       when :expr then
         AST::Script.new(Parser.new(subtree).parse)
-      #when :iteration then
+      when :iteration
+        AST::Iteration.new(Parser.new(subtree).parse.first)
       else
-        "pending"
+        raise "error: #{type} is not valid"
       end
     end
   end
