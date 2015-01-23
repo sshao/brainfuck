@@ -3,13 +3,17 @@ require_relative "stages"
 require "colorize"
 
 class Brainfuck
-  def self.run(file)
+  attr_accessor :print_bytecode
+
+  def self.run(file, print_bytecode)
+    @print_bytecode = true if print_bytecode
+
     bnd = Object.new
     def bnd.get; binding; end
     bnd = bnd.get
 
     code = File.read(file)
-    meth = Compiler.compile_code(Brainfuck::Lexer.new(code).lex, bnd.variables)
+    meth = Compiler.compile_code(Brainfuck::Lexer.new(code).lex, bnd.variables, @print_bytecode)
     meth.scope = bnd.constant_scope
     meth.name = :__eval__
 
@@ -30,4 +34,4 @@ class Brainfuck
   end
 end
 
-Brainfuck.run("../progs/print_nums.b")
+Brainfuck.run("../progs/print_nums.b", ARGV.first)

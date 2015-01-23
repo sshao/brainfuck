@@ -5,7 +5,7 @@ require "rubinius/ast"
 
 class Brainfuck
   class Compiler < Rubinius::ToolSets::Runtime::Compiler
-    def self.compile_code(code, variable_scope, file = "(eval)", line = 0)
+    def self.compile_code(code, variable_scope, file = "(eval)", line = 0, verbose)
       # start at stage :bf_code, end at stage :compiled_file (rubinius/compiler/stages.rb)
       compiler = new :bf_code, :compiled_file
       parser = compiler.parser
@@ -15,7 +15,7 @@ class Brainfuck
 
       compiler.generator.variable_scope = variable_scope
 
-      compiler.packager.print.bytecode = true
+      compiler.packager.print.bytecode = verbose
 
       code = compiler.run
 
