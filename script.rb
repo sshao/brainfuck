@@ -34,4 +34,9 @@ class Brainfuck
   end
 end
 
-Brainfuck.run(ARGV.first, ARGV.last)
+if ARGV.size < 1
+  puts "usage: ruby script.rb <filename> <optional verbose>"
+  exit
+end
+
+Brainfuck.run(ARGV.first, ARGV[1])
