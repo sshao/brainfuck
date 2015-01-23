@@ -36,12 +36,18 @@ class Brainfuck
         end
       end
 
+      class InitPtr
+        def bytecode(g)
+          CodeTools::AST::FixnumLiteral.new(1,0).bytecode(g)
+        end
+      end
+
       class Start
         def pre_bytecode(g)
           g.set_line Integer(1)
-          CodeTools::AST::LocalVariableAssignment.new(1, "array", InitHeap.new).bytecode(g)
+          CodeTools::AST::LocalVariableAssignment.new(1, :array, InitHeap.new).bytecode(g)
           g.set_local 0
-          CodeTools::AST::LocalVariableAssignment.new(1, "ptr", CodeTools::AST::FixnumLiteral.new(1, 0)).bytecode(g)
+          CodeTools::AST::LocalVariableAssignment.new(1, :ptr, InitPtr.new).bytecode(g)
           g.set_local 1
         end
       end
