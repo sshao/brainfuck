@@ -1,5 +1,6 @@
 require_relative "lexer"
 require_relative "stages"
+require "colorize"
 
 class Brainfuck
   def self.run(file)
@@ -21,10 +22,11 @@ class Brainfuck
     be.under_context(bnd.variables, meth)
     res = be.call
 
-    puts "\nreturn value (array):"
+    puts "\n\nnon-zero heap values:".red
     res.each_with_index do |x, i|
       print "[#{i} => #{x}] " if x != 0
     end
+    puts ""
   end
 end
 
