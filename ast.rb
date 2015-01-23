@@ -1,5 +1,52 @@
+require "rubinius/compiler"
+require "rubinius/ast"
+
+module CodeTools
+  module AST
+    # Override EvalExpression#bytecode so
+    # that it returns the heap at the end
+    class EvalExpression < Container
+      def bytecode(g)
+        super(g)
+
+        container_bytecode(g) do
+          @body.bytecode(g)
+          g.push_local 0
+          g.ret
+        end
+      end
+    end
+  end
+end
+
 class Brainfuck
   class AST
+    class Init
+      class InitHeap
+        def initialize
+          @size = 30_000
+          @default = 0
+        end
+
+        def bytecode(g)
+          args = [CodeTools::AST::FixnumLiteral.new(1, @size), CodeTools::AST::FixnumLiteral.new(1, @default)]
+          receiver = CodeTools::AST::ConstantAccess.new(1, :Array)
+
+          CodeTools::AST::SendFastNew.new(1, receiver, :new, CodeTools::AST::ArrayLiteral.new(1, args)).bytecode(g)
+        end
+      end
+
+      class Start
+        def pre_bytecode(g)
+          g.set_line Integer(1)
+          CodeTools::AST::LocalVariableAssignment.new(1, "array", InitHeap.new).bytecode(g)
+          g.set_local 0
+          CodeTools::AST::LocalVariableAssignment.new(1, "ptr", CodeTools::AST::FixnumLiteral.new(1, 0)).bytecode(g)
+          g.set_local 1
+        end
+      end
+    end
+
     class PointerIncrement
       def bytecode(g)
         g.push_local(1)

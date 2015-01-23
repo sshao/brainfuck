@@ -23,7 +23,7 @@ class Brainfuck
 
     puts "\nreturn value (array):"
     res.each_with_index do |x, i|
-      puts "[#{i}] #{x}" if x != 0
+      print "[#{i} => #{x}] " if x != 0
     end
   end
 end

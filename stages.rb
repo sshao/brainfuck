@@ -6,10 +6,11 @@ require "rubinius/ast"
 class Brainfuck
   class Compiler < Rubinius::ToolSets::Runtime::Compiler
     def self.compile_code(code, variable_scope, file = "(eval)", line = 0)
-      compiler = new :bf_code, :compiled_method
+      # start at stage :bf_code, end at stage :compiled_file (rubinius/compiler/stages.rb)
+      compiler = new :bf_code, :compiled_file
       parser = compiler.parser
 
-      parser.root CodeTools::AST::EvalExpression
+      parser.root = CodeTools::AST::EvalExpression
       parser.input code, "eval", line
 
       compiler.generator.variable_scope = variable_scope
@@ -26,6 +27,7 @@ class Brainfuck
   module Stages
     class Generator < Rubinius::ToolSets::Runtime::Compiler::Stage
       attr_accessor :variable_scope
+
       next_stage Rubinius::ToolSets::Runtime::Compiler::Encoder
 
       def initialize(compiler, last)
@@ -36,23 +38,7 @@ class Brainfuck
       def run
         @output = Rubinius::ToolSets::Runtime::Generator.new
 
-        @output.set_line Integer(1)
-        @output.local_count = 2
-        @output.local_names = ["arr", "ip"]
-
-        @output.meta_push_0
-        @output.set_local 1
-        @output.push_const :Array
-        @output.push_int(30_000)
-        @output.meta_push_0
-        @output.send(:new, 2)
-        @output.cast_array
-        @output.set_local 0
-
-        @input.first.bytecode @output
-
-        @output.push_local 0
-        @output.ret
+        @input.bytecode @output
 
         @output.close
 
@@ -61,6 +47,7 @@ class Brainfuck
     end
 
     class Code < Rubinius::ToolSets::Runtime::Compiler::Stage
+      attr_accessor :root
       stage :bf_code
       next_stage Generator
 
@@ -75,12 +62,11 @@ class Brainfuck
         @line = line
       end
 
-      def root(klass)
-        @root = klass
-      end
-
       def run
-        @output = Brainfuck::Parser.new(@code).parse
+        res = Brainfuck::Parser.new(@code).parse
+        @output = @root.new res.first
+        @output.file = @filename
+        @output.pre_exe = [AST::Init::Start.new]
         run_next
       end
     end
