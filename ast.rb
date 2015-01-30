@@ -29,7 +29,8 @@ class Brainfuck
         end
 
         def bytecode(g)
-          args = [CodeTools::AST::FixnumLiteral.new(1, @size), CodeTools::AST::FixnumLiteral.new(1, @default)]
+          args = [CodeTools::AST::FixnumLiteral.new(1, @size),
+                  CodeTools::AST::FixnumLiteral.new(1, @default)]
           receiver = CodeTools::AST::ConstantAccess.new(1, :Array)
 
           CodeTools::AST::SendFastNew.new(1, receiver, :new, CodeTools::AST::ArrayLiteral.new(1, args)).bytecode(g)
@@ -112,6 +113,7 @@ class Brainfuck
         g.push_local(1)
         g.send(:[], 1, false)
         g.send(:putc, 1, false)
+        g.pop
       end
     end
 
