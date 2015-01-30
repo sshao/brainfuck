@@ -57,7 +57,7 @@ class Brainfuck
       end
 
       def input(code, filename = "eval", line = 1)
-        @code = code
+        @code = Brainfuck::Lexer.new(code).lex
         @filename = filename
         @line = line
       end

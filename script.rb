@@ -13,7 +13,7 @@ class Brainfuck
     bnd = bnd.get
 
     code = File.read(file)
-    meth = Compiler.compile_code(Brainfuck::Lexer.new(code).lex, bnd.variables, @print_bytecode)
+    meth = Compiler.compile_code(code, bnd.variables, @print_bytecode)
     meth.scope = bnd.constant_scope
     meth.name = :__eval__
 
