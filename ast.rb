@@ -121,9 +121,12 @@ class Brainfuck
       def bytecode(g)
         g.push_local(0)
         g.push_local(1)
-        g.send(:getc, 1, false)
+
+        g.push_const :STDIN
+        g.send(:getc, 0, false)
 
         g.send(:[]=, 2, false)
+
         g.pop
       end
     end
