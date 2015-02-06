@@ -15,7 +15,7 @@ class Brainfuck
 
       compiler.generator.variable_scope = variable_scope
 
-      compiler.packager.print.bytecode = verbose
+      compiler.packager.print.bytecode = verbose if verbose
 
       code = compiler.run
 
