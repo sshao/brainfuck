@@ -3,8 +3,6 @@ require_relative "stages"
 require "colorize"
 
 class Brainfuck
-  attr_accessor :print_bytecode
-
   def self.run(input, verbose = false)
     bnd = Object.new
     def bnd.get; binding; end
