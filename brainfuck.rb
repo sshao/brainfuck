@@ -3,11 +3,12 @@ require_relative "stages"
 require "colorize"
 
 class Brainfuck
-  def self.run(input, verbose = false)
+  def self.run(input, options = {})
     bnd = Object.new
     def bnd.get; binding; end
     bnd = bnd.get
 
+    verbose = options[:verbose]
     code = File.exist?(input) ? File.read(input) : input
 
     meth = Compiler.compile_code(code, bnd.variables, verbose)
