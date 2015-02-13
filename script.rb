@@ -5,16 +5,14 @@ require "colorize"
 class Brainfuck
   attr_accessor :print_bytecode
 
-  def self.run(input, verbose)
-    @print_bytecode = true if verbose
-
+  def self.run(input, verbose = false)
     bnd = Object.new
     def bnd.get; binding; end
     bnd = bnd.get
 
     code = File.exist?(input) ? File.read(input) : input
 
-    meth = Compiler.compile_code(code, bnd.variables, @print_bytecode)
+    meth = Compiler.compile_code(code, bnd.variables, verbose)
     meth.scope = bnd.constant_scope
     meth.name = :__eval__
 

@@ -5,13 +5,13 @@ require "rubinius/ast"
 
 class Brainfuck
   class Compiler < Rubinius::ToolSets::Runtime::Compiler
-    def self.compile_code(code, variable_scope, file = "(eval)", line = 0, verbose)
+    def self.compile_code(code, variable_scope, file = "(eval)", verbose)
       # start at stage :bf_code, end at stage :compiled_file (rubinius/compiler/stages.rb)
       compiler = new :bf_code, :compiled_file
       parser = compiler.parser
 
       parser.root = CodeTools::AST::EvalExpression
-      parser.input code, "eval", line
+      parser.input code, "eval", 1
 
       compiler.generator.variable_scope = variable_scope
 
