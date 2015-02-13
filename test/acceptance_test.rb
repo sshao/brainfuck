@@ -86,6 +86,6 @@ class TestBrainfuck < MiniTest::Test
   def assert_evaluates(expected, code)
     expected = expected + Array.new(30000-expected.size, 0)
 
-    assert_equal expected, Brainfuck.run(code, nil)
+    assert_equal expected, Brainfuck.run(code)
   end
 end
