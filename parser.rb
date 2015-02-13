@@ -1,5 +1,7 @@
 require_relative "ast"
 
+class ParserError < StandardError; end
+
 class Brainfuck
   class Parser
     def initialize(ast)
@@ -30,7 +32,7 @@ class Brainfuck
       when :iteration
         AST::Iteration.new(Parser.new(subtree).parse.first)
       else
-        raise "error: #{type} is not valid"
+        raise ParserError, "error: #{type} is not valid"
       end
     end
   end

@@ -2,8 +2,6 @@ class LexerError < StandardError; end
 
 class Brainfuck
   class Lexer
-    COMMANDS = %w(> < + - . , [ ])
-
     def initialize(code)
       @sexp_stack = [{expr: []}]
       @code = code

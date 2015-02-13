@@ -29,27 +29,37 @@ class Brainfuck
         end
 
         def bytecode(g)
-          args = [CodeTools::AST::FixnumLiteral.new(1, @size),
-                  CodeTools::AST::FixnumLiteral.new(1, @default)]
+          heap_size = CodeTools::AST::FixnumLiteral.new(1, @size)
+          heap_default = CodeTools::AST::FixnumLiteral.new(1, @default)
           receiver = CodeTools::AST::ConstantAccess.new(1, :Array)
 
-          CodeTools::AST::SendFastNew.new(1, receiver, :new, CodeTools::AST::ArrayLiteral.new(1, args)).bytecode(g)
+          heap = CodeTools::AST::ArrayLiteral.new(1, [heap_size, heap_default])
+
+          CodeTools::AST::SendFastNew.new(1, receiver, :new, heap).bytecode(g)
         end
       end
 
       class InitPtr
         def bytecode(g)
-          CodeTools::AST::FixnumLiteral.new(1,0).bytecode(g)
+          CodeTools::AST::FixnumLiteral.new(1, 0).bytecode(g)
         end
       end
 
       class Start
         def pre_bytecode(g)
           g.set_line Integer(1)
-          CodeTools::AST::LocalVariableAssignment.new(1, :array, InitHeap.new).bytecode(g)
-          g.set_local 0
-          CodeTools::AST::LocalVariableAssignment.new(1, :ptr, InitPtr.new).bytecode(g)
-          g.set_local 1
+          assign_local(g, 0, :array, InitHeap)
+          assign_local(g, 1, :ptr, InitPtr)
+        end
+
+        private
+        def assign_local(g, local_pos, name, value_klass)
+          local_asgn_node(name, value_klass).bytecode(g)
+          g.set_local local_pos
+        end
+
+        def local_asgn_node(name, value_klass)
+          CodeTools::AST::LocalVariableAssignment.new(1, name, value_klass.new)
         end
       end
     end

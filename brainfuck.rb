@@ -22,19 +22,22 @@ class Brainfuck
 
     be = Rubinius::BlockEnvironment.new
     be.under_context(bnd.variables, meth)
-    res = be.call
+    heap = be.call
 
-    if verbose
-      puts "\n\nnon-zero heap values:".red
+    print_heap(heap) if verbose
 
-      res.each_with_index do |x, i|
-        print "[#{i} => #{x}] " if x != 0
-      end
+    heap
+  end
 
-      puts ""
+  private
+  def self.print_heap(heap)
+    puts "\n\nnon-zero heap values:".red
+
+    heap.each_with_index do |val, i|
+      print "[#{i} => #{val}] " if val != 0
     end
 
-    res
+    puts ""
   end
 end
 

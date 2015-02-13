@@ -6,7 +6,6 @@ require "rubinius/ast"
 class Brainfuck
   class Compiler < Rubinius::ToolSets::Runtime::Compiler
     def self.compile_code(code, variable_scope, file = "(eval)", verbose)
-      # start at stage :bf_code, end at stage :compiled_file (rubinius/compiler/stages.rb)
       compiler = new :bf_code, :compiled_file
       parser = compiler.parser
 
@@ -27,7 +26,6 @@ class Brainfuck
   module Stages
     class Generator < Rubinius::ToolSets::Runtime::Compiler::Stage
       attr_accessor :variable_scope
-
       next_stage Rubinius::ToolSets::Runtime::Compiler::Encoder
 
       def initialize(compiler, last)
@@ -37,9 +35,7 @@ class Brainfuck
 
       def run
         @output = Rubinius::ToolSets::Runtime::Generator.new
-
         @input.bytecode @output
-
         @output.close
 
         run_next
@@ -63,8 +59,8 @@ class Brainfuck
       end
 
       def run
-        res = Brainfuck::Parser.new(@code).parse
-        @output = @root.new res.first
+        ast = Brainfuck::Parser.new(@code).parse
+        @output = @root.new ast.first
         @output.file = @filename
         @output.pre_exe = [AST::Init::Start.new]
         run_next
