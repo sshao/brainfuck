@@ -21,10 +21,10 @@ class Brainfuck
 
     def generate_node(type, subtree = [])
       case type
-      when :ptr_inc then AST::PointerIncrement.new
-      when :ptr_dec then AST::PointerDecrement.new
-      when :inc then AST::Increment.new
-      when :dec then AST::Decrement.new
+      when :ptr_inc then AST::PointerIncrement.new(1)
+      when :ptr_dec then AST::PointerDecrement.new(1)
+      when :inc then AST::Increment.new(1)
+      when :dec then AST::Decrement.new(1)
       when :puts then AST::Puts.new
       when :gets then AST::Gets.new
       when :expr then

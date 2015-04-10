@@ -65,9 +65,13 @@ class Brainfuck
     end
 
     class PointerIncrement
+      def initialize(amount)
+        @amount = 1
+      end
+
       def bytecode(g)
         g.push_local(1)
-        g.meta_push_1
+        g.push_int(@amount)
         g.meta_send_op_plus(0)
         g.set_local(1)
         g.pop
@@ -75,9 +79,13 @@ class Brainfuck
     end
 
     class PointerDecrement
+      def initialize(amount)
+        @amount = 1
+      end
+
       def bytecode(g)
         g.push_local(1)
-        g.meta_push_1
+        g.push_int(@amount)
         g.meta_send_op_minus(0)
         g.set_local(1)
         g.pop
@@ -85,6 +93,10 @@ class Brainfuck
     end
 
     class Increment
+      def initialize(amount)
+        @amount = 1
+      end
+
       def bytecode(g)
         g.push_local(0) # get array
         g.push_local(1) # get ptr
@@ -92,7 +104,7 @@ class Brainfuck
         g.dup_many(2)   # dup array + ptr to read val at array[ptr]
         g.send(:[], 1, false) # cur = array[ptr]
 
-        g.meta_push_1
+        g.push_int(@amount)
         g.meta_send_op_plus(0) # sum = cur + 1
 
         g.send(:[]=, 2, false) # array[ptr] =  sum
@@ -101,6 +113,10 @@ class Brainfuck
     end
 
     class Decrement
+      def initialize(amount)
+        @amount = 1
+      end
+
       def bytecode(g)
         g.push_local(0)
         g.push_local(1)
@@ -108,7 +124,7 @@ class Brainfuck
         g.dup_many(2)
         g.send(:[], 1, false)
 
-        g.meta_push_1
+        g.push_int(@amount)
         g.meta_send_op_minus(0)
 
         g.send(:[]=, 2, false)
