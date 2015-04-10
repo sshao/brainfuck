@@ -22,12 +22,12 @@ class Brainfuck
 
     def rule(cmd, i)
       case cmd
-      when ">" then @sexp_stack.last[:expr] << :ptr_inc
-      when "<" then @sexp_stack.last[:expr] << :ptr_dec
-      when "+" then @sexp_stack.last[:expr] << :inc
-      when "-" then @sexp_stack.last[:expr] << :dec
-      when "." then @sexp_stack.last[:expr] << :puts
-      when "," then @sexp_stack.last[:expr] << :gets
+      when ">" then @sexp_stack.last[:expr] << {:ptr_inc => 1}
+      when "<" then @sexp_stack.last[:expr] << {:ptr_dec => 1}
+      when "+" then @sexp_stack.last[:expr] << {:inc => 1}
+      when "-" then @sexp_stack.last[:expr] << {:dec => 1}
+      when "." then @sexp_stack.last[:expr] << {:puts => nil}
+      when "," then @sexp_stack.last[:expr] << {:gets => nil}
       when "[" then
         raise LexerError, "missing matching brace" if !matching_brace?(i)
         @sexp_stack.push({expr: []})

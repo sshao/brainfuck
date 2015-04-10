@@ -31,7 +31,7 @@ class TestLexer < MiniTest::Test
   end
 
   def test_strips_whitespace
-    expected = [{expr: [:ptr_inc, :ptr_inc]}]
+    expected = [{expr: [{:ptr_inc => 1}, {:ptr_inc => 1}]}]
 
     inputs = [" > > ", "\t>\t>\t", "\n>\n>\n"]
 
