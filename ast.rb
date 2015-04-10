@@ -66,7 +66,7 @@ class Brainfuck
 
     class PointerIncrement
       def initialize(amount)
-        @amount = 1
+        @amount = amount
       end
 
       def bytecode(g)
@@ -80,7 +80,7 @@ class Brainfuck
 
     class PointerDecrement
       def initialize(amount)
-        @amount = 1
+        @amount = amount
       end
 
       def bytecode(g)
@@ -94,7 +94,7 @@ class Brainfuck
 
     class Increment
       def initialize(amount)
-        @amount = 1
+        @amount = amount
       end
 
       def bytecode(g)
@@ -114,7 +114,7 @@ class Brainfuck
 
     class Decrement
       def initialize(amount)
-        @amount = 1
+        @amount = amount
       end
 
       def bytecode(g)
