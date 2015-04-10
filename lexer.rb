@@ -20,12 +20,20 @@ class Brainfuck
       @code = @code.gsub(/\s+/, "")
     end
 
+    def add(sym)
+      if !@sexp_stack.last[:expr].last.nil? && @sexp_stack.last[:expr].last.keys.first == sym
+        @sexp_stack.last[:expr].last[sym] += 1
+      else
+        @sexp_stack.last[:expr] << { sym => 1 }
+      end
+    end
+
     def rule(cmd, i)
       case cmd
-      when ">" then @sexp_stack.last[:expr] << {:ptr_inc => 1}
-      when "<" then @sexp_stack.last[:expr] << {:ptr_dec => 1}
-      when "+" then @sexp_stack.last[:expr] << {:inc => 1}
-      when "-" then @sexp_stack.last[:expr] << {:dec => 1}
+      when ">" then add(:ptr_inc)
+      when "<" then add(:ptr_dec)
+      when "+" then add(:inc)
+      when "-" then add(:dec)
       when "." then @sexp_stack.last[:expr] << {:puts => nil}
       when "," then @sexp_stack.last[:expr] << {:gets => nil}
       when "[" then
