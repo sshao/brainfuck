@@ -12,25 +12,25 @@ class Brainfuck
       # FIXME still not good
       @ast.map do |s|
         symbol = s.is_a?(Hash) ? s.keys.first : s
-        subtree = s.is_a?(Hash) ? s[symbol] : []
-        generate_node(symbol, subtree)
+        args = s.is_a?(Hash) ? s[symbol] : []
+        generate_node(symbol, args)
       end
     end
 
     private
 
-    def generate_node(type, subtree = [])
+    def generate_node(type, args = [])
       case type
-      when :ptr_inc then AST::PointerIncrement.new(1)
-      when :ptr_dec then AST::PointerDecrement.new(1)
-      when :inc then AST::Increment.new(1)
-      when :dec then AST::Decrement.new(1)
+      when :ptr_inc then AST::PointerIncrement.new(args)
+      when :ptr_dec then AST::PointerDecrement.new(args)
+      when :inc then AST::Increment.new(args)
+      when :dec then AST::Decrement.new(args)
       when :puts then AST::Puts.new
       when :gets then AST::Gets.new
       when :expr then
-        AST::Script.new(Parser.new(subtree).parse)
+        AST::Script.new(Parser.new(args).parse)
       when :iteration
-        AST::Iteration.new(Parser.new(subtree).parse.first)
+        AST::Iteration.new(Parser.new(args).parse.first)
       else
         raise ParserError, "error: #{type} is not valid"
       end
